@@ -38,4 +38,13 @@ public class ProdutoUseCase implements IProdutoUseCasePort {
             throw e;
         }
     }
+
+    @Override
+    public Produto findProdutoById(Long id) {
+        try {
+            return produtoRepositoryPort.findById(id);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 }

@@ -6,4 +6,5 @@ import java.util.List;
 public interface IProdutoRepositoryPort {
     Produto save(Produto produto);
     List<Produto> findAll();
+    Produto findById(Long id);
 }

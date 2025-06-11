@@ -7,6 +7,6 @@ public class Produto {
     private Long id;
     private String nome;
     private Double preco;
-    private Long categoriaId;
+    private Categoria categoria;
     private Integer estoque;
 }

@@ -39,4 +39,15 @@ public class ProdutoController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Produto> getProdutoById(@PathVariable Long id) {
+        try {
+            Produto produto = produtoUseCase.findProdutoById(id);
+            return ResponseEntity.ok(produto);
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 }

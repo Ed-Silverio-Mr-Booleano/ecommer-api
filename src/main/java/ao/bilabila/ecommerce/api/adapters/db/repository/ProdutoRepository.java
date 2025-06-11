@@ -1,5 +1,6 @@
 package ao.bilabila.ecommerce.api.adapters.db.repository;
 
+import ao.bilabila.ecommerce.api.core.domain.models.Categoria;
 import ao.bilabila.ecommerce.api.core.domain.models.Produto;
 import ao.bilabila.ecommerce.api.ports.out.IProdutoRepositoryPort;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,7 +28,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, produto.getNome());
             ps.setDouble(2, produto.getPreco());
-            ps.setLong(3, produto.getCategoriaId());
+            ps.setLong(3, produto.getCategoria().getId());
             ps.setDouble(4, produto.getEstoque());
             return ps;
         }, keyHolder);
@@ -38,14 +39,45 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
 
     @Override
     public List<Produto> findAll() {
-        String sql = "SELECT * FROM produto";
+        String sql = "SELECT p.id, p.produto, p.preco, p.estoque, c.id AS categoria_id, c.categoria " +
+                "FROM produto p LEFT JOIN categoria c ON p.categoria_id = c.id";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Produto prod = new Produto();
             prod.setId(rs.getLong("id"));
             prod.setNome(rs.getString("produto"));
             prod.setPreco(rs.getDouble("preco"));
-            prod.setCategoriaId(rs.getLong("categoria_id"));
+            prod.setEstoque(rs.getObject("estoque") != null ? rs.getInt("estoque") : 0);
+
+            Long categoriaId = rs.getObject("categoria_id") != null ? rs.getLong("categoria_id") : null;
+            String categoriaNome = rs.getString("categoria");
+            if (categoriaId != null && categoriaNome != null) {
+                Categoria categoria = new Categoria();
+                categoria.setId(categoriaId);
+                categoria.setCategoria(categoriaNome);
+                prod.setCategoria(categoria);
+            }
+            return prod;
+        });
+    }
+
+    public Produto findById(Long id) {
+        String sql = "SELECT p.id, p.produto, p.preco, p.estoque, c.id AS categoria_id, c.categoria " +
+                "FROM produto p LEFT JOIN categoria c ON p.categoria_id = c.id WHERE p.id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> {
+            Produto prod = new Produto();
+            prod.setId(rs.getLong("id"));
+            prod.setNome(rs.getString("produto"));
+            prod.setPreco(rs.getDouble("preco"));
             prod.setEstoque(rs.getInt("estoque"));
+
+            Long categoriaId = rs.getObject("categoria_id") != null ? rs.getLong("categoria_id") : null;
+            String categoriaNome = rs.getString("categoria");
+            if (categoriaId != null && categoriaNome != null) {
+                Categoria categoria = new Categoria();
+                categoria.setId(categoriaId);
+                categoria.setCategoria(categoriaNome);
+                prod.setCategoria(categoria);
+            }
             return prod;
         });
     }
