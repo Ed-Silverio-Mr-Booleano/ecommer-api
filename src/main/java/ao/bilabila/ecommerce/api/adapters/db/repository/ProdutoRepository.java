@@ -21,7 +21,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
 
     @Override
     public Produto save(Produto produto) {
-        String sql = "INSERT INTO produto (produto, preco, categoria_id, estoque) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO produto (produto, preco, categoria_id, estoque, img) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -30,6 +30,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
             ps.setDouble(2, produto.getPreco());
             ps.setLong(3, produto.getCategoria().getId());
             ps.setDouble(4, produto.getEstoque());
+            ps.setString(5, produto.getImg());
             return ps;
         }, keyHolder);
 
@@ -39,7 +40,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
 
     @Override
     public List<Produto> findAll() {
-        String sql = "SELECT p.id, p.produto, p.preco, p.estoque, c.id AS categoria_id, c.categoria " +
+        String sql = "SELECT p.id, p.produto, p.preco, p.estoque, p.img, c.id AS categoria_id, c.categoria " +
                 "FROM produto p LEFT JOIN categoria c ON p.categoria_id = c.id";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Produto prod = new Produto();
@@ -47,6 +48,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
             prod.setNome(rs.getString("produto"));
             prod.setPreco(rs.getDouble("preco"));
             prod.setEstoque(rs.getObject("estoque") != null ? rs.getInt("estoque") : 0);
+            prod.setImg(rs.getString("img"));
 
             Long categoriaId = rs.getObject("categoria_id") != null ? rs.getLong("categoria_id") : null;
             String categoriaNome = rs.getString("categoria");
@@ -61,7 +63,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
     }
 
     public Produto findById(Long id) {
-        String sql = "SELECT p.id, p.produto, p.preco, p.estoque, c.id AS categoria_id, c.categoria " +
+        String sql = "SELECT p.id, p.produto, p.preco, p.estoque, p.img, c.id AS categoria_id, c.categoria " +
                 "FROM produto p LEFT JOIN categoria c ON p.categoria_id = c.id WHERE p.id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> {
             Produto prod = new Produto();
@@ -69,6 +71,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
             prod.setNome(rs.getString("produto"));
             prod.setPreco(rs.getDouble("preco"));
             prod.setEstoque(rs.getInt("estoque"));
+            prod.setImg(rs.getString("img"));
 
             Long categoriaId = rs.getObject("categoria_id") != null ? rs.getLong("categoria_id") : null;
             String categoriaNome = rs.getString("categoria");

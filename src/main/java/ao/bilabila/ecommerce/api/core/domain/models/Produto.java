@@ -9,4 +9,5 @@ public class Produto {
     private Double preco;
     private Categoria categoria;
     private Integer estoque;
+    private String img;
 }
