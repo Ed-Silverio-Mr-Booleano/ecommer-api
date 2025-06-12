@@ -2,12 +2,16 @@ package ao.bilabila.ecommerce.api.adapters.factories;
 
 import ao.bilabila.ecommerce.api.adapters.db.repository.CategoriaRepository;
 import ao.bilabila.ecommerce.api.adapters.db.repository.ProdutoRepository;
+import ao.bilabila.ecommerce.api.adapters.db.repository.VendaRepository;
 import ao.bilabila.ecommerce.api.core.usecases.CategoriaUseCase;
 import ao.bilabila.ecommerce.api.core.usecases.ProdutoUseCase;
+import ao.bilabila.ecommerce.api.core.usecases.VendaUseCase;
 import ao.bilabila.ecommerce.api.ports.in.ICategoriaUseCasePort;
 import ao.bilabila.ecommerce.api.ports.in.IProdutoUseCasePort;
+import ao.bilabila.ecommerce.api.ports.in.IVendaUseCasePort;
 import ao.bilabila.ecommerce.api.ports.out.ICategoriaRepositoryPort;
 import ao.bilabila.ecommerce.api.ports.out.IProdutoRepositoryPort;
+import ao.bilabila.ecommerce.api.ports.out.IVendaRepositoryPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,5 +36,14 @@ public class Usecases {
     @Bean
     public ICategoriaUseCasePort categoriaUseCasePort(ICategoriaRepositoryPort categoriaRepositoryPort) {
         return new CategoriaUseCase(categoriaRepositoryPort);
+    }
+    @Bean
+    public IVendaRepositoryPort vendaRepository(JdbcTemplate jdbcTemplate) {
+        return new VendaRepository(jdbcTemplate);
+    }
+
+    @Bean
+    public IVendaUseCasePort vendaUseCasePort(IVendaRepositoryPort vendaRepositoryPort, IProdutoUseCasePort produtoUseCasePort) {
+        return new VendaUseCase(vendaRepositoryPort, produtoUseCasePort);
     }
 }

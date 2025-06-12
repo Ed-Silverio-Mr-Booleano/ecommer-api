@@ -61,7 +61,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
             return prod;
         });
     }
-
+  @Override
     public Produto findById(Long id) {
         String sql = "SELECT p.id, p.produto, p.preco, p.estoque, p.img, c.id AS categoria_id, c.categoria " +
                 "FROM produto p LEFT JOIN categoria c ON p.categoria_id = c.id WHERE p.id = ?";
@@ -83,5 +83,15 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
             }
             return prod;
         });
+    }
+ @Override
+    public void deactivateProduto(Long id) {
+        String sql = "UPDATE produto SET ativo = 0 WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+    @Override
+    public void updateStock(Long produtoId, int quantidade) {
+        String sql = "UPDATE produto SET estoque = estoque - ? WHERE id = ? AND estoque >= ?";
+        jdbcTemplate.update(sql, quantidade, produtoId, quantidade);
     }
 }

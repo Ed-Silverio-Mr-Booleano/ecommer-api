@@ -3,7 +3,6 @@ package ao.bilabila.ecommerce.api.core.usecases;
 import ao.bilabila.ecommerce.api.core.domain.models.Produto;
 import ao.bilabila.ecommerce.api.ports.in.IProdutoUseCasePort;
 import ao.bilabila.ecommerce.api.ports.out.IProdutoRepositoryPort;
-
 import java.util.List;
 
 public class ProdutoUseCase implements IProdutoUseCasePort {
@@ -18,7 +17,13 @@ public class ProdutoUseCase implements IProdutoUseCasePort {
     public Produto saveProduto(Produto produto) throws Exception {
         try {
             if (produto == null || produto.getNome() == null || produto.getNome().trim().isEmpty()) {
-                throw new Exception("Erro ao salvar o produto");
+                throw new Exception("Nome do produto é obrigatório");
+            }
+            if (produto.getPreco() == null || produto.getPreco() < 0) {
+                throw new Exception("Preço inválido");
+            }
+            if (produto.getEstoque() == null || produto.getEstoque() < 0) {
+                throw new Exception("Estoque inválido");
             }
             return produtoRepositoryPort.save(produto);
         } catch (Exception e) {
@@ -40,9 +45,30 @@ public class ProdutoUseCase implements IProdutoUseCasePort {
     }
 
     @Override
-    public Produto findProdutoById(Long id) {
+    public Produto findProdutoById(Long id) throws Exception {
         try {
             return produtoRepositoryPort.findById(id);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateStock(Long produtoId, Integer quantidadeComprada) throws Exception {
+        try {
+            if (quantidadeComprada == null || quantidadeComprada <= 0) {
+                throw new Exception("Quantidade comprada inválida");
+            }
+            produtoRepositoryPort.updateStock(produtoId, quantidadeComprada);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public void deactivateProduto(Long id) throws Exception {
+        try {
+            produtoRepositoryPort.deactivateProduto(id);
         } catch (Exception e) {
             throw e;
         }
