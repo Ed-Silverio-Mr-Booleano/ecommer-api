@@ -7,7 +7,7 @@ public interface IProdutoRepositoryPort {
     Produto save(Produto produto);
     List<Produto> findAll();
     Produto findById(Long id);
-    void deactivateProduto(Long id);
+    void deactivateProduto(Long id, String ative);
     void updateStock(Long produtoId, int quantidadeComprada);
 
 }

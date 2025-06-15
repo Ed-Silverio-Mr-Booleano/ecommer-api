@@ -41,7 +41,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
     @Override
     public List<Produto> findAll() {
         String sql = "SELECT p.id, p.produto, p.preco, p.estoque, p.img, c.id AS categoria_id, c.categoria " +
-                "FROM produto p LEFT JOIN categoria c ON p.categoria_id = c.id";
+                "FROM produto p LEFT JOIN categoria c ON p.categoria_id = c.id WHERE p.estoque > 0 AND p.ativo = 1";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Produto prod = new Produto();
             prod.setId(rs.getLong("id"));
@@ -64,7 +64,7 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
   @Override
     public Produto findById(Long id) {
         String sql = "SELECT p.id, p.produto, p.preco, p.estoque, p.img, c.id AS categoria_id, c.categoria " +
-                "FROM produto p LEFT JOIN categoria c ON p.categoria_id = c.id WHERE p.id = ?";
+                "FROM produto p LEFT JOIN categoria c ON p.categoria_id = c.id WHERE p.id = ? AND p.estoque > 0 AND p.ativo = 1";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> {
             Produto prod = new Produto();
             prod.setId(rs.getLong("id"));
@@ -85,9 +85,9 @@ public class ProdutoRepository implements IProdutoRepositoryPort {
         });
     }
  @Override
-    public void deactivateProduto(Long id) {
-        String sql = "UPDATE produto SET ativo = 0 WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+    public void deactivateProduto(Long id, String ativo) {
+        String sql = "UPDATE produto SET ativo = ? WHERE id = ?";
+        jdbcTemplate.update(sql, ativo, id);
     }
     @Override
     public void updateStock(Long produtoId, int quantidade) {

@@ -66,9 +66,9 @@ public class ProdutoUseCase implements IProdutoUseCasePort {
     }
 
     @Override
-    public void deactivateProduto(Long id) throws Exception {
+    public void deactivateProduto(Long id, String ative) throws Exception {
         try {
-            produtoRepositoryPort.deactivateProduto(id);
+            produtoRepositoryPort.deactivateProduto(id, ative);
         } catch (Exception e) {
             throw e;
         }

@@ -50,4 +50,14 @@ public class ProdutoController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<String> deactivateProduto(@PathVariable Long id, @RequestParam String ative) {
+        try {
+            produtoUseCase.deactivateProduto(id, ative);
+            return ResponseEntity.ok("Produto desativado/activado com sucesso");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

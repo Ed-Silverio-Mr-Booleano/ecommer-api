@@ -2,7 +2,6 @@ package ao.bilabila.ecommerce.api.adapters.db.repository;
 
 import ao.bilabila.ecommerce.api.core.domain.models.Usuario;
 import ao.bilabila.ecommerce.api.ports.out.IUsuarioRepositoryPort;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -12,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
 
 @Repository
@@ -45,8 +45,8 @@ public class UsuarioRepository implements IUsuarioRepositoryPort {
         String sql = "SELECT id, username, password, email, data_criacao, role FROM usuario WHERE username = ?";
         try {
             return jdbcTemplate.queryForObject(sql, new Object[]{username}, (rs, rowNum) -> mapRowToUsuario(rs));
-        } catch (EmptyResultDataAccessException e) {
-            return null; // Retorna null se não encontrar o usuário
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
         }
     }
 
@@ -55,9 +55,15 @@ public class UsuarioRepository implements IUsuarioRepositoryPort {
         String sql = "SELECT id, username, password, email, data_criacao, role FROM usuario WHERE email = ?";
         try {
             return jdbcTemplate.queryForObject(sql, new Object[]{email}, (rs, rowNum) -> mapRowToUsuario(rs));
-        } catch (EmptyResultDataAccessException e) {
-            return null; // Retorna null se não encontrar o usuário
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
         }
+    }
+
+    @Override
+    public List<Usuario> findAllUsersByRole(String role) {
+        String sql = "SELECT id, username, password, email, data_criacao, role FROM usuario WHERE role = ?";
+        return jdbcTemplate.query(sql, new Object[]{role}, (rs, rowNum) -> mapRowToUsuario(rs));
     }
 
     private Usuario mapRowToUsuario(ResultSet rs) throws SQLException {

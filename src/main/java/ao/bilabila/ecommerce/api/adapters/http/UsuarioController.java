@@ -7,6 +7,8 @@ import ao.bilabila.ecommerce.api.core.usecases.UsuarioUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class UsuarioController {
@@ -35,5 +37,11 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
+    }
+
+    @GetMapping("/users/by-role")
+    public ResponseEntity<List<Usuario>> getUsersByRole(@RequestParam String role) {
+        List<Usuario> users = usuarioUseCase.getUsersByRole(role);
+        return ResponseEntity.ok(users);
     }
 }

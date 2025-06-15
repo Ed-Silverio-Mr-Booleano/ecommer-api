@@ -7,6 +7,8 @@ import ao.bilabila.ecommerce.api.ports.out.IUsuarioRepositoryPort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UsuarioUseCase implements IUsuarioUseCasePort {
 
@@ -51,5 +53,8 @@ public class UsuarioUseCase implements IUsuarioUseCasePort {
         response.setToken(token);
         response.setRole(usuario.getRole());
         return response;
+    }
+    public List<Usuario> getUsersByRole(String role) {
+        return usuarioRepositoryPort.findAllUsersByRole(role);
     }
 }
