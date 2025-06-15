@@ -10,4 +10,5 @@ import java.util.List;
 public class OrderRequest {
     private Venda venda;
     private List<VendaProduto> vendaProdutos;
+    private Transacao transacao; // Novo campo para incluir tipo de pagamento e estado
 }

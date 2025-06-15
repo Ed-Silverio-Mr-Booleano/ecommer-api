@@ -7,5 +7,5 @@ public class Transacao {
     private Long id;
     private Long vendaId;
     private Long tipoPagamentoId;
-    private String estado;
+    private String estado; // pending, completed, failed
 }

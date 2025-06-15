@@ -22,10 +22,13 @@ public class VendaController {
     @PostMapping
     public ResponseEntity<Long> criarOrder(@RequestBody OrderRequest orderRequest) {
         try {
-            Long orderId = vendaUseCase.criarOrder(orderRequest.getVenda(), orderRequest.getVendaProdutos());
+            Long orderId = vendaUseCase.criarOrder(
+                    orderRequest.getVenda(),
+                    orderRequest.getVendaProdutos(),
+                    orderRequest.getTransacao()
+            );
             return ResponseEntity.ok(orderId);
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.badRequest().body(null);
         }
     }
