@@ -3,6 +3,7 @@ package ao.bilabila.ecommerce.api.core.domain.models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 public class Venda {
@@ -13,4 +14,6 @@ public class Venda {
     private Timestamp dataVendaInicio;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Timestamp dataVendaFinal;
+    private List<VendaProduto> vendaProdutos;
+    private Transacao transacao;
 }

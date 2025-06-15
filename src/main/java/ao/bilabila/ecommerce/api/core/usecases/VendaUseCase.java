@@ -3,19 +3,21 @@ package ao.bilabila.ecommerce.api.core.usecases;
 import ao.bilabila.ecommerce.api.core.domain.models.Transacao;
 import ao.bilabila.ecommerce.api.core.domain.models.Venda;
 import ao.bilabila.ecommerce.api.core.domain.models.VendaProduto;
+import ao.bilabila.ecommerce.api.core.domain.models.VendaResponse;
 import ao.bilabila.ecommerce.api.ports.in.IProdutoUseCasePort;
 import ao.bilabila.ecommerce.api.ports.in.IVendaUseCasePort;
-import ao.bilabila.ecommerce.api.ports.out.ITransacaoRepositoryPort;
 import ao.bilabila.ecommerce.api.ports.out.IVendaRepositoryPort;
+import ao.bilabila.ecommerce.api.ports.out.ITransacaoRepositoryPort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VendaUseCase implements IVendaUseCasePort {
 
     private final IVendaRepositoryPort vendaRepositoryPort;
     private final IProdutoUseCasePort produtoUseCase;
-    private final ITransacaoRepositoryPort transacaoRepositoryPort; // Nova dependência
+    private final ITransacaoRepositoryPort transacaoRepositoryPort;
 
     public VendaUseCase(IVendaRepositoryPort vendaRepositoryPort, IProdutoUseCasePort produtoUseCase, ITransacaoRepositoryPort transacaoRepositoryPort) {
         this.vendaRepositoryPort = vendaRepositoryPort;
@@ -30,6 +32,9 @@ public class VendaUseCase implements IVendaUseCasePort {
             if (venda == null || venda.getClienteId() == null) {
                 throw new Exception("Venda inválida ou cliente ausente");
             }
+            if (vendaProdutos == null || vendaProdutos.isEmpty()) {
+                throw new Exception("Lista de produtos da venda é obrigatória");
+            }
             Long vendaId = vendaRepositoryPort.saveVenda(venda);
             for (VendaProduto vp : vendaProdutos) {
                 if (vp.getQuantidadeComprada() == null || vp.getQuantidadeComprada() <= 0) {
@@ -39,7 +44,6 @@ public class VendaUseCase implements IVendaUseCasePort {
                 vendaRepositoryPort.saveVendaProduto(vp);
                 produtoUseCase.updateStock(vp.getProdutoId(), vp.getQuantidadeComprada());
             }
-            // Criar transação
             if (transacao != null) {
                 transacao.setVendaId(vendaId);
                 if (transacao.getTipoPagamentoId() == null) {
@@ -57,9 +61,40 @@ public class VendaUseCase implements IVendaUseCasePort {
     }
 
     @Override
-    public List<Venda> listarVendas() {
+    public List<VendaResponse> listarVendas() throws Exception {
         try {
-            return vendaRepositoryPort.findAllVendas();
+            List<Venda> vendas = vendaRepositoryPort.findAllVendas();
+            return vendas.stream()
+                    .map(venda -> vendaRepositoryPort.convertToVendaResponse(venda)) // Explicitando o parâmetro
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public List<VendaResponse> listarVendasPorUser(Long clienteId) throws Exception {
+        try {
+            if (clienteId == null) {
+                throw new Exception("Cliente ID é obrigatório");
+            }
+            List<Venda> vendas = vendaRepositoryPort.findVendasByClienteId(clienteId);
+            return vendas.stream()
+                    .map(venda -> vendaRepositoryPort.convertToVendaResponse(venda)) // Explicitando o parâmetro
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public VendaResponse listarVendaPorId(Long vendaId) throws Exception {
+        try {
+            if (vendaId == null) {
+                throw new Exception("Venda ID é obrigatório");
+            }
+            Venda venda = vendaRepositoryPort.findVendaById(vendaId);
+            return venda != null ? vendaRepositoryPort.convertToVendaResponse(venda) : null; // Explicitando o parâmetro
         } catch (Exception e) {
             throw e;
         }
@@ -68,7 +103,8 @@ public class VendaUseCase implements IVendaUseCasePort {
     @Override
     public void mudarStatusOrder(Long vendaId, String estado) throws Exception {
         try {
-            if (!List.of("progress", "ready", "delivered", "completed").contains(estado)) {
+            System.out.println("Estado: "+   estado);
+            if (!List.of("progress", "ready", "shipping", "completed").contains(estado)) {
                 throw new Exception("Estado inválido");
             }
             vendaRepositoryPort.updateVendaStatus(vendaId, estado);

@@ -71,4 +71,9 @@ public class Usecases {
     public ITipoPagamentoUseCasePort tipoPagamentoUseCasePort(ITipoPagamentoRepositoryPort tipoPagamentoRepositoryPort) {
         return new TipoPagamentoUseCase(tipoPagamentoRepositoryPort);
     }
+
+    @Bean
+    public ITransacaoUseCasePort transacaoUseCasePort(ITransacaoRepositoryPort transacaoRepositoryPort, ITipoPagamentoUseCasePort tipoPagamentoUseCasePort) {
+        return new TransacaoUseCase(transacaoRepositoryPort, tipoPagamentoUseCasePort);
+    }
 }

@@ -38,8 +38,8 @@ public class TransacaoRepository implements ITransacaoRepositoryPort {
     }
 
     @Override
-    public void updateTransacaoStatus(Long transacaoId, String estado) {
-        String sql = "UPDATE transacao SET estado = ? WHERE id = ?";
-        jdbcTemplate.update(sql, estado, transacaoId);
+    public void updateTransacaoStatus(Long vendaId, String estado) {
+        String sql = "UPDATE transacao SET estado = ? WHERE venda_id = ?";
+        jdbcTemplate.update(sql, estado, vendaId);
     }
 }
