@@ -1,6 +1,7 @@
 package ao.bilabila.ecommerce.api.core.usecases;
 
 import ao.bilabila.ecommerce.api.core.domain.models.Transacao;
+import ao.bilabila.ecommerce.api.ports.in.ITipoPagamentoUseCasePort;
 import ao.bilabila.ecommerce.api.ports.in.ITransacaoUseCasePort;
 import ao.bilabila.ecommerce.api.ports.out.ITransacaoRepositoryPort;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +12,7 @@ public class TransacaoUseCase implements ITransacaoUseCasePort {
 
     private final ITransacaoRepositoryPort transacaoRepositoryPort;
 
-    public TransacaoUseCase(ITransacaoRepositoryPort transacaoRepositoryPort) {
+    public TransacaoUseCase(ITransacaoRepositoryPort transacaoRepositoryPort, ITipoPagamentoUseCasePort tipoPagamentoUseCasePort) {
         this.transacaoRepositoryPort = transacaoRepositoryPort;
     }
 

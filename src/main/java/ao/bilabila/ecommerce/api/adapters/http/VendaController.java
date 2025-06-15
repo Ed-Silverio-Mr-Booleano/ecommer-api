@@ -1,8 +1,7 @@
 package ao.bilabila.ecommerce.api.adapters.http;
 
 import ao.bilabila.ecommerce.api.core.domain.models.OrderRequest;
-import ao.bilabila.ecommerce.api.core.domain.models.Venda;
-import ao.bilabila.ecommerce.api.core.domain.models.VendaProduto;
+import ao.bilabila.ecommerce.api.core.domain.models.VendaResponse;
 import ao.bilabila.ecommerce.api.ports.in.IVendaUseCasePort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,21 +33,42 @@ public class VendaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Venda>> listarVendas() {
+    public ResponseEntity<List<VendaResponse>> listarVendas() {
         try {
-            List<Venda> vendas = vendaUseCase.listarVendas();
+            List<VendaResponse> vendas = vendaUseCase.listarVendas();
             return ResponseEntity.ok(vendas);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
 
+    @GetMapping("/user/{clienteId}")
+    public ResponseEntity<List<VendaResponse>> listarVendasPorUser(@PathVariable Long clienteId) {
+        try {
+            List<VendaResponse> vendas = vendaUseCase.listarVendasPorUser(clienteId);
+            return ResponseEntity.ok(vendas);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("/{vendaId}")
+    public ResponseEntity<VendaResponse> listarVendaPorId(@PathVariable Long vendaId) {
+        try {
+            VendaResponse venda = vendaUseCase.listarVendaPorId(vendaId);
+            return venda != null ? ResponseEntity.ok(venda) : ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @PutMapping("/{id}/status")
-    public ResponseEntity<Void> mudarStatusOrder(@PathVariable Long id, @RequestBody String estado) {
+    public ResponseEntity<Void> mudarStatusOrder(@PathVariable Long id, @RequestParam String estado) {
         try {
             vendaUseCase.mudarStatusOrder(id, estado);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.badRequest().build();
         }
     }
