@@ -154,11 +154,18 @@ public class VendaRepository implements IVendaRepositoryPort {
         response.setDataVendaInicio(venda.getDataVendaInicio());
         response.setDataVendaFinal(venda.getDataVendaFinal());
 
-        // Converter vendaProdutos
+        // Converter vendaProdutos, incluindo o produto do produto
         List<VendaResponse.VendaProdutoResponse> produtoResponses = venda.getVendaProdutos().stream().map(vp -> {
             VendaResponse.VendaProdutoResponse pr = new VendaResponse.VendaProdutoResponse();
             pr.setProdutoId(vp.getProdutoId());
             pr.setQuantidadeComprada(vp.getQuantidadeComprada());
+            // Buscar o produto do produto no banco
+            String produtoNome = jdbcTemplate.queryForObject(
+                    "SELECT produto FROM produto WHERE id = ?",
+                    new Object[]{vp.getProdutoId()},
+                    String.class
+            );
+            pr.setProduto(produtoNome != null ? produtoNome : "Produto não encontrado");
             return pr;
         }).toList();
         response.setProdutos(produtoResponses);

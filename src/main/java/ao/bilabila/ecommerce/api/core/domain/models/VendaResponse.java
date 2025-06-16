@@ -23,6 +23,7 @@ public class VendaResponse {
     public static class VendaProdutoResponse {
         private Long produtoId;
         private Integer quantidadeComprada;
+        private String produto;
     }
 
     // Classe interna para TransacaoResponse
